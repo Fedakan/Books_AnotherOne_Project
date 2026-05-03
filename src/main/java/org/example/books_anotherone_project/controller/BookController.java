@@ -1,6 +1,7 @@
 package org.example.books_anotherone_project.controller;
 
 
+import jakarta.validation.Valid;
 import org.example.books_anotherone_project.model.Book;
 import org.example.books_anotherone_project.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,8 @@ public class BookController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable long id) {
-        try {
-            Book book = bookService.getBookById(id);
-            return ResponseEntity.ok(book);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Book book = bookService.getBookById(id);
+        return ResponseEntity.ok(book);
     }
 
     @GetMapping("/author")
@@ -49,9 +46,10 @@ public class BookController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        bookService.addBook(book);
-        return new ResponseEntity<>(book, HttpStatus.CREATED);
+    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
+        book.setId(0);
+        Book savedBook = bookService.addBook(book);
+        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
 
     @GetMapping("/search")

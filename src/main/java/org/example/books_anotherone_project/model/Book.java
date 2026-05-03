@@ -1,9 +1,17 @@
 package org.example.books_anotherone_project.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class Book {
 
     long id;
+
+    @NotBlank(message = "Title cannot be empty")
+    @Size(min = 1, max = 50, message = "Cannot be less than 1 syllable and more than 50")
     String title;
+
+    @NotBlank(message = "Cannot be empty")
     String author;
     boolean available;
 
@@ -12,6 +20,9 @@ public class Book {
         this.title = title;
         this.author = author;
         this.available = available;
+    }
+
+    public Book() {
     }
 
     public long getId() {
