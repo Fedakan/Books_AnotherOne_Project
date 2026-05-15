@@ -4,10 +4,7 @@ package org.example.books_anotherone_project.repository;
 import org.example.books_anotherone_project.model.Book;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -56,8 +53,15 @@ public class BookRepository {
     }
 
     public List<Book> findByTitleContaining(String title) {
+        if (title == null || title.isBlank()){
+            return Collections.emptyList();
+        }
+
+        String lowerCaseTitle = title.toLowerCase();
+
         return books.stream()
-                .filter(b -> b.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .filter(Objects::nonNull)
+                .filter(b -> b.getTitle().toLowerCase().contains(lowerCaseTitle))
                 .sorted(Comparator.comparing(Book::getTitle))
                 .toList();
     }

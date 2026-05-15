@@ -2,6 +2,8 @@ package org.example.books_anotherone_project.controller;
 
 
 import jakarta.validation.Valid;
+import org.example.books_anotherone_project.DTO.BookCreateRequest;
+import org.example.books_anotherone_project.DTO.BookDTO;
 import org.example.books_anotherone_project.model.Book;
 import org.example.books_anotherone_project.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -9,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/api/books")
@@ -24,45 +24,63 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable long id) {
+    public ResponseEntity<BookDTO> getBookById(@PathVariable long id) {
         Book book = bookService.getBookById(id);
-        return ResponseEntity.ok(book);
+        BookDTO dto = BookDTO.fromEntity(book);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/author")
-    public ResponseEntity<List<Book>> getBookByAuthor(@RequestParam String author) {
-        List<Book> book = bookService.getBooksByAuthor(author);
-        return ResponseEntity.ok(book);
+    public ResponseEntity<List<BookDTO>> getBookByAuthor(@RequestParam String author) {
+        List<BookDTO> dto = bookService.getBooksByAuthor(author)
+                .stream()
+                .map(BookDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(dto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBookById(@PathVariable long id) {
-        if (bookService.existById(id)){
-            bookService.deleteBook(id);
-            return ResponseEntity.noContent().build();
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<BookDTO>> getAvailableBooks() {
+        List<BookDTO> dto = bookService.getAvailableBooks()
+                .stream()
+                .map(BookDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(@Valid @RequestBody Book book) {
+    public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookCreateRequest request) {
+        Book book = new Book();
         book.setId(0);
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setAvailable(true);
+
         Book savedBook = bookService.addBook(book);
-        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+
+        BookDTO dto = BookDTO.fromEntity(savedBook);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Book>> searchBooksByTitle(@RequestParam String title) {
-        List<Book> books = bookService.searchBooksByTitle(title);
-        return ResponseEntity.ok(books);
+    public ResponseEntity<List<BookDTO>> searchBooksByTitle(@RequestParam String title) {
+        List<BookDTO> dto = bookService.searchBooksByTitle(title)
+                .stream()
+                .map(BookDTO::fromEntity)
+                .toList();
+        return ResponseEntity.ok(dto);
     }
 
     @PatchMapping(("/{id}/availability"))
-    public ResponseEntity<Book> updateAvailability(@PathVariable long id, @RequestParam boolean available) {
+    public ResponseEntity<BookDTO> updateAvailability(@PathVariable long id, @RequestParam boolean available) {
         Book updatedBook = bookService.updateAvailability(id, available);
-        return ResponseEntity.ok(updatedBook);
+        BookDTO dto = BookDTO.fromEntity(updatedBook);
+        return ResponseEntity.ok(dto);
     }
-
-
 }

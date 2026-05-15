@@ -1,6 +1,7 @@
 package org.example.books_anotherone_project.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.books_anotherone_project.DTO.BookDTO;
 import org.example.books_anotherone_project.model.Book;
 import org.example.books_anotherone_project.repository.BookRepository;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,11 @@ public class BookService {
     }
 
     public void deleteBook(long id) {
-        bookRepository.delete(id);
+        if (bookRepository.findById(id).isPresent()) {
+            bookRepository.delete(id);
+        }else {
+            throw new RuntimeException("Book not found");
+        }
     }
 
     public boolean existById(long id) {
@@ -45,7 +50,15 @@ public class BookService {
     }
 
     public Book addBook(Book book) {
+        log.info("Adding book {}", book);
         return bookRepository.saveBook(book);
+    }
+
+    public List<Book> getAvailableBooks() {
+        return bookRepository.findAll()
+                .stream()
+                .filter(Book::isAvailable)
+                .toList();
     }
 
     public List<Book> searchBooksByTitle(String title) {

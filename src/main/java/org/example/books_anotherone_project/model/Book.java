@@ -1,19 +1,24 @@
 package org.example.books_anotherone_project.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+
 public class Book {
 
-    long id;
+    private long id;
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 1, max = 50, message = "Cannot be less than 1 syllable and more than 50")
-    String title;
+    private String title;
 
     @NotBlank(message = "Cannot be empty")
-    String author;
-    boolean available;
+    private String author;
+    private boolean available;
 
     public Book(long id, String title, String author, boolean available) {
         this.id = id;
