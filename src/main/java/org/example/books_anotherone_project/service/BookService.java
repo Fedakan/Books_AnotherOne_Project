@@ -27,41 +27,38 @@ public class BookService {
     }
 
     public void deleteBook(long id) {
-        if (bookRepository.findById(id).isPresent()) {
-            bookRepository.delete(id);
+        if (bookRepository.existsById(id)) {
+            bookRepository.deleteById(id);
         }else {
             throw new RuntimeException("Book not found");
         }
     }
 
     public boolean existById(long id) {
-        return bookRepository.findById(id).isPresent();
+        return bookRepository.existsById(id);
     }
 
-    public List<Book> getBooksByAuthor(String author) {
+    public List<Book> findByAuthor(String author) {
         return bookRepository.findByAuthor(author);
     }
 
     public Book updateAvailability(long id, boolean newStatus) {
         Book avaliableBook = getBookById(id);
         avaliableBook.setAvailable(newStatus);
-        bookRepository.saveBook(avaliableBook);
+        bookRepository.save(avaliableBook);
         return avaliableBook;
     }
 
     public Book addBook(Book book) {
         log.info("Adding book {}", book);
-        return bookRepository.saveBook(book);
+        return bookRepository.save(book);
     }
 
     public List<Book> getAvailableBooks() {
-        return bookRepository.findAll()
-                .stream()
-                .filter(Book::isAvailable)
-                .toList();
+        return bookRepository.findByAvailableTrue();
     }
 
-    public List<Book> searchBooksByTitle(String title) {
-        return bookRepository.findByTitleContaining(title);
+    public List<Book> findByTitleContainingIgnoreCase(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title);
     }
 }

@@ -32,7 +32,7 @@ public class BookController {
 
     @GetMapping("/author")
     public ResponseEntity<List<BookDTO>> getBookByAuthor(@RequestParam String author) {
-        List<BookDTO> dto = bookService.getBooksByAuthor(author)
+        List<BookDTO> dto = bookService.findByAuthor(author)
                 .stream()
                 .map(BookDTO::fromEntity)
                 .toList();
@@ -57,7 +57,6 @@ public class BookController {
     @PostMapping("/addBook")
     public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookCreateRequest request) {
         Book book = new Book();
-        book.setId(0);
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
         book.setAvailable(true);
@@ -70,7 +69,7 @@ public class BookController {
 
     @GetMapping("/search")
     public ResponseEntity<List<BookDTO>> searchBooksByTitle(@RequestParam String title) {
-        List<BookDTO> dto = bookService.searchBooksByTitle(title)
+        List<BookDTO> dto = bookService.findByTitleContainingIgnoreCase(title)
                 .stream()
                 .map(BookDTO::fromEntity)
                 .toList();
