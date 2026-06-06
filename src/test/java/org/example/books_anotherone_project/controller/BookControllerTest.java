@@ -78,4 +78,40 @@ public class BookControllerTest {
         boolean exists = bookRepository.existsById(savedBook.getId());
         assertFalse(exists);
     }
+
+    @Test
+    void shouldReturnBooksByAuthorSuccessfully() throws Exception {
+        bookRepository.save(new Book(0L, "Thinking in Java", "Bruce Eckel", true));
+        bookRepository.save(new Book(0L, "Clean Code", "Robert Martin", true));
+
+        mockMvc.perform(get("/api/books/author")
+                .param("author", "Bruce Eckel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].author").value("Bruce Eckel"));
+    }
+
+    @Test
+    void shouldSearchBooksByTitleIgnoreCase() throws Exception {
+        bookRepository.save(new Book(0L, "Thinking in Java", "Bruce Eckel", true));
+        bookRepository.save(new Book(0L, "Lord of The Rings", "Tolkien", true));
+
+        mockMvc.perform(get("/api/books/search").param("title", "java"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].title").value("Thinking in Java"));
+    }
+
+    @Test
+    void shouldUpdateBookAvailability() throws Exception {
+        Book book = new Book(0L, "Thinking in Java", "Bruce Eckel", true);
+        Book savedBook = bookRepository.save(book);
+
+        mockMvc.perform(patch("/api/books/{id}/availability", savedBook.getId())
+                .param("available", "false"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("Not Available"));
+        Book updatedBookInBd = bookRepository.findById(savedBook.getId()).orElseThrow();
+        assertFalse(updatedBookInBd.isAvailable());
+    }
 }
