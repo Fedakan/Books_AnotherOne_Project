@@ -10,6 +10,7 @@ public class BookCreateRequest {
     String title;
 
     @NotBlank(message = "Cannot be empty")
+    @Size(min = 1, max = 50, message = "Cannot be less than 1 syllable and more than 50")
     String author;
 
     public BookCreateRequest(String title, String author) {

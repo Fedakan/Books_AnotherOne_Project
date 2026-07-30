@@ -41,8 +41,8 @@ public class BookControllerTest {
         BookCreateRequest request = new BookCreateRequest("Thinking in Java", "Bruce Eckel");
 
         mockMvc.perform(post("/api/books/addBook")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("Thinking in Java"))
                 .andExpect(jsonPath("$.status").value("Available"));
@@ -51,9 +51,9 @@ public class BookControllerTest {
     @Test
     void shouldReturnNotFoundWhenBookDoesNotExist() throws Exception {
         mockMvc.perform(get("/api/books/{id}", 999)
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()
-        );
+                );
     }
 
     @Test
@@ -85,7 +85,7 @@ public class BookControllerTest {
         bookRepository.save(new Book(0L, "Clean Code", "Robert Martin", true));
 
         mockMvc.perform(get("/api/books/author")
-                .param("author", "Bruce Eckel"))
+                        .param("author", "Bruce Eckel"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].author").value("Bruce Eckel"));
@@ -108,10 +108,52 @@ public class BookControllerTest {
         Book savedBook = bookRepository.save(book);
 
         mockMvc.perform(patch("/api/books/{id}/availability", savedBook.getId())
-                .param("available", "false"))
+                        .param("available", "false"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("Not Available"));
         Book updatedBookInBd = bookRepository.findById(savedBook.getId()).orElseThrow();
         assertFalse(updatedBookInBd.isAvailable());
     }
+
+    @Test
+    void shouldReturnBadRequestWhenTitleIsEmpty() throws Exception {
+        BookCreateRequest request = new BookCreateRequest("", "Bruce Eckel");
+
+        mockMvc.perform(post("/api/books/addBook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenTitleIsTooLong() throws Exception {
+        BookCreateRequest request = new BookCreateRequest("A".repeat(51), "Bruce Eckel");
+
+        mockMvc.perform(post("/api/books/addBook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenAuthorIsEmpty() throws Exception {
+        BookCreateRequest request = new BookCreateRequest("Thinking in Java", "");
+
+        mockMvc.perform(post("/api/books/addBook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenAuthorIsTooLong() throws Exception {
+        BookCreateRequest request = new BookCreateRequest("A", "B".repeat(51));
+
+        mockMvc.perform(post("/api/books/addBook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.author").value("Cannot be less than 1 syllable and more than 50"));
+    }
+
 }
