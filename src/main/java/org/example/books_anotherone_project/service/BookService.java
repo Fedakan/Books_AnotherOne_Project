@@ -7,6 +7,8 @@ import org.example.books_anotherone_project.exception.BookNotFoundException;
 import org.example.books_anotherone_project.model.Book;
 import org.example.books_anotherone_project.repository.BookRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,8 +41,8 @@ public class BookService {
         return bookRepository.existsById(id);
     }
 
-    public List<Book> findByAuthor(String author) {
-        return bookRepository.findByAuthor(author);
+    public Page<Book> findByAuthor(String author, Pageable pageable) {
+        return bookRepository.findByAuthor(author, pageable);
     }
 
     @Transactional
@@ -55,11 +57,11 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public List<Book> getAvailableBooks() {
-        return bookRepository.findByAvailableTrue();
+    public Page<Book> getAvailableBooks(Pageable pageable) {
+        return bookRepository.findByAvailableTrue(pageable);
     }
 
-    public List<Book> findByTitleContainingIgnoreCase(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
+    public Page<Book> findByTitleContainingIgnoreCase(String title, Pageable pageable) {
+        return bookRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 }

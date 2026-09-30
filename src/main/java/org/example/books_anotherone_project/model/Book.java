@@ -1,8 +1,6 @@
 package org.example.books_anotherone_project.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 @Entity
 public class Book {

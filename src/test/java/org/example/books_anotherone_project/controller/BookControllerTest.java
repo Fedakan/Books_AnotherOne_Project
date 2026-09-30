@@ -61,10 +61,13 @@ public class BookControllerTest {
         bookRepository.save(new Book(0L, "Thinking in Java", "Bruce Eckel", true));
         bookRepository.save(new Book(0L, "Lord of The Rings", "Tolkien", false));
 
-        mockMvc.perform(get("/api/books/available"))
+        mockMvc.perform(get("/api/books/available")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].title").value("Thinking in Java"));
+                .andExpect(jsonPath("$.content.size()").value(1))
+                .andExpect(jsonPath("$.content[0].title").value("Thinking in Java"))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
@@ -85,10 +88,13 @@ public class BookControllerTest {
         bookRepository.save(new Book(0L, "Clean Code", "Robert Martin", true));
 
         mockMvc.perform(get("/api/books/author")
-                        .param("author", "Bruce Eckel"))
+                        .param("author", "Bruce Eckel")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].author").value("Bruce Eckel"));
+                .andExpect(jsonPath("$.content.size()").value(1))
+                .andExpect(jsonPath("$.content[0].author").value("Bruce Eckel"))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test
@@ -96,10 +102,14 @@ public class BookControllerTest {
         bookRepository.save(new Book(0L, "Thinking in Java", "Bruce Eckel", true));
         bookRepository.save(new Book(0L, "Lord of The Rings", "Tolkien", true));
 
-        mockMvc.perform(get("/api/books/search").param("title", "java"))
+        mockMvc.perform(get("/api/books/search")
+                        .param("title", "java")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].title").value("Thinking in Java"));
+                .andExpect(jsonPath("$.content.size()").value(1))
+                .andExpect(jsonPath("$.content[0].title").value("Thinking in Java"))
+                .andExpect(jsonPath("$.totalElements").value(1));
     }
 
     @Test

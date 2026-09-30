@@ -6,6 +6,8 @@ import org.example.books_anotherone_project.DTO.BookCreateRequest;
 import org.example.books_anotherone_project.DTO.BookDTO;
 import org.example.books_anotherone_project.model.Book;
 import org.example.books_anotherone_project.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +33,9 @@ public class BookController {
     }
 
     @GetMapping("/author")
-    public ResponseEntity<List<BookDTO>> getBookByAuthor(@RequestParam String author) {
-        List<BookDTO> dto = bookService.findByAuthor(author)
-                .stream()
-                .map(BookDTO::fromEntity)
-                .toList();
+    public ResponseEntity<Page<BookDTO>> getBookByAuthor(@RequestParam String author, Pageable pageable) {
+        Page<BookDTO> dto = bookService.findByAuthor(author, pageable)
+                .map(BookDTO::fromEntity);
         return ResponseEntity.ok(dto);
     }
 
@@ -46,11 +46,9 @@ public class BookController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<List<BookDTO>> getAvailableBooks() {
-        List<BookDTO> dto = bookService.getAvailableBooks()
-                .stream()
-                .map(BookDTO::fromEntity)
-                .toList();
+    public ResponseEntity<Page<BookDTO>> getAvailableBooks(Pageable pageable) {
+        Page<BookDTO> dto = bookService.getAvailableBooks(pageable)
+                .map(BookDTO::fromEntity);
         return ResponseEntity.ok(dto);
     }
 
@@ -68,11 +66,9 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookDTO>> searchBooksByTitle(@RequestParam String title) {
-        List<BookDTO> dto = bookService.findByTitleContainingIgnoreCase(title)
-                .stream()
-                .map(BookDTO::fromEntity)
-                .toList();
+    public ResponseEntity<Page<BookDTO>> searchBooksByTitle(@RequestParam String title, Pageable pageable) {
+        Page<BookDTO> dto = bookService.findByTitleContainingIgnoreCase(title, pageable)
+                .map(BookDTO::fromEntity);
         return ResponseEntity.ok(dto);
     }
 
