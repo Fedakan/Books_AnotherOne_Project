@@ -1,6 +1,10 @@
 package org.example.books_anotherone_project.model;
 
 import jakarta.persistence.*;
+import jdk.dynalink.linker.LinkerServices;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Book {
@@ -16,6 +20,29 @@ public class Book {
     private String author;
 
     private boolean available;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
     public Book(long id, String title, String author, boolean available) {
         this.id = id;
