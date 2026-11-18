@@ -4,9 +4,18 @@ import org.example.books_anotherone_project.model.Book;
 
 public class BookDTO {
 
-    String title;
-    String author;
-    String status;
+    private String title;
+    private String author;
+    private String status;
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
     public BookDTO(String title, String author, String status) {
         this.title = title;
@@ -46,9 +55,12 @@ public class BookDTO {
         BookDTO bookDTO = new BookDTO();
         bookDTO.setTitle(book.getTitle());
         bookDTO.setAuthor(book.getAuthor());
-        if (book.isAvailable()){
+        if (book.getCategory() != null) {
+            bookDTO.setCategoryName(book.getCategory().getName());
+        }
+        if (book.isAvailable()) {
             bookDTO.setStatus("Available");
-        }else {
+        } else {
             bookDTO.setStatus("Not Available");
         }
         return bookDTO;

@@ -59,7 +59,7 @@ public class BookController {
         book.setAuthor(request.getAuthor());
         book.setAvailable(true);
 
-        Book savedBook = bookService.addBook(book);
+        Book savedBook = bookService.addBook(book, request.getCategoryId());
 
         BookDTO dto = BookDTO.fromEntity(savedBook);
         return new ResponseEntity<>(dto, HttpStatus.CREATED);

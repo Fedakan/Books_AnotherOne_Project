@@ -49,16 +49,17 @@ public class BookServiceTest {
 
     @Test
     void shouldDeleteBookSuccessfully() {
-        Mockito.when(bookRepository.existsById(1L)).thenReturn(true);
+        Book book = new Book(1L, "Thinking in Java", "Bruce Eckel", true);
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
         bookService.deleteBook(1L);
 
-        Mockito.verify(bookRepository, Mockito.times(1)).deleteById(1L);
+        Mockito.verify(bookRepository, Mockito.times(1)).delete(book);
     }
 
     @Test
     void shouldThrowExceptionWhenDeletingNonexistentBook() {
-        Mockito.when(bookRepository.existsById(1L)).thenReturn(false);
+        Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
         Assertions.assertThrows(BookNotFoundException.class, () -> bookService.deleteBook(1L));
     }
@@ -69,7 +70,7 @@ public class BookServiceTest {
         Book savedBook = new Book(1L, "Thinking in Java", "Bruce Eckel", true);
         Mockito.when(bookRepository.save(inputBook)).thenReturn(savedBook);
 
-        Book result = bookService.addBook(inputBook);
+        Book result = bookService.addBook(inputBook, null);
 
         Assertions.assertEquals("Thinking in Java", result.getTitle());
         Assertions.assertEquals(1L, result.getId());

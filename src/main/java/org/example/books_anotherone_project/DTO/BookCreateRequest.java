@@ -7,11 +7,27 @@ public class BookCreateRequest {
 
     @NotBlank(message = "Title cannot be empty")
     @Size(min = 1, max = 50, message = "Cannot be less than 1 syllable and more than 50")
-    String title;
+    private String title;
 
     @NotBlank(message = "Cannot be empty")
     @Size(min = 1, max = 50, message = "Cannot be less than 1 syllable and more than 50")
-    String author;
+    private String author;
+
+    private Long categoryId;
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public BookCreateRequest(String title, String author, Long categoryId) {
+        this.title = title;
+        this.author = author;
+        this.categoryId = categoryId;
+    }
 
     public BookCreateRequest(String title, String author) {
         this.title = title;
